@@ -7,6 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-
+	<a href="/AJAX/memberManage.do">회원관리</a>
 </body>
 </html>
