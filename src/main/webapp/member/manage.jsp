@@ -10,6 +10,40 @@
 		display: block;
 	}
 </style>
+<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+<script>
+	// 페이지로드 이벤트
+	$(document).ready(function(){
+		fnList();
+		fnDetail();
+		fnAdd();
+		fnModify();
+		fnRemove();
+		fnInit();
+	})
+	
+	// 함수 영역
+	function fnList(){
+		// 화면이 열리면 곧바로 실행
+	}
+	function fnDetail(){
+		// 조회 버튼을 클릭하면 실행
+	}
+	function fnAdd(){
+		// 등록 버튼을 클릭하면 실행
+	}
+	function fnModify(){
+		// 수정 버튼을 클릭하면 실행
+	}
+	function fnRemove()
+	{
+		// 삭제 버튼을 클릭하면 실행
+	}
+	function fnInit(){
+		// 초기화 버튼을 클릭하면 실행
+	}
+	
+</script>
 </head>
 <body>
 	<h1>회원관리</h1>
@@ -37,6 +71,8 @@
 			<input type="button" value="삭제" id="btnRemove">
 		</div>	
 	</div>
+	
+	<hr>
 	
 	<div>
 		<table border="1">
