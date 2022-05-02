@@ -25,11 +25,31 @@
 	
 	// 함수 영역
 	function fnList(){
-		/* $('#').on('',function(){
-			$.ajax({
+		// 화면이 열리면 곧바로 실행!
+		// 추가로 일어날 이벤트는 x
+		$.ajax({
+			url : '/AJAX/list.do',
+			//type : 'GET',		
+			dataType : 'json',
+			success : function(responseText){
+				var memberList = $('#memberList');
+				memberList.empty();	// 회원 목록의 초기화!
+				$.each(responseText,function(i,member){
+					// 그냥 문자열 형식으로 만드는 방법도 있다!
+					var tr = $('<tr>');
+					$('<td>').html(member.id).appendTo(tr);
+					$('<td>').html(member.name).appendTo(tr);
+					$('<td>').html(member.gender).appendTo(tr);
+					tr.append($('<td>').html(member.address));
+					$('<td>').html('<input type="button" value="조회" class="btnDetail">').appendTo(tr);
+					memberList.append(tr);
+				})
+			},
+			error : function(jqXHR){
 				
-			})
-		}); */
+			}
+			
+		});
 	}
 	function fnDetail(){
 		// 조회 버튼을 클릭하면 실행
@@ -40,7 +60,7 @@
 		$('#btnAdd').click(function(){
 
 			// 요청 URL
-			// http://localhost:9090/AJAX/add.do
+			// http://localhost:9090/AJAX/add.do (이렇게 적어도된당)
 				
 			// 요청 Method
 			// POST
@@ -60,7 +80,15 @@
 				data : 'id=' + $('#id').val() + '&name=' + $('#name').val() + '&gender=' + $(':radio[name="gender"]:checked').val() + '&address=' + $('#address').val(),				
 				dataType : 'json',
 				success: function(responseText){		// AddService에서 out.write(reponseText) 가 success일 때, 함수 매개변수로 넘어온다.
-					alert(responseText.res);
+					if(responseText.res == 1){
+						alert('신규 회원이 등록되었습니다.');
+						fnList();						// 회원 등록 후 목록을 갱신
+						// 회원 입력 창 초기화!
+						$('#id').val('');
+						$('#name').val('');
+						$(':radio[name="gender"]').prop('checked',false);
+						$('#address').val('');	
+					}
 				},
 				error : function(jqXHR){
 					alert(jqXHR.status);
@@ -68,6 +96,7 @@
 				}
 			})
 		});
+	
 	}
 	function fnModify(){
 		// 수정 버튼을 클릭하면 실행
