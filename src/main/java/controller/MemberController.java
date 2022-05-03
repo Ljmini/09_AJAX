@@ -9,8 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import common.ActionForward;
 import service.AddService;
+import service.RemoveService;
+import service.DetailService;
 import service.ListService;
 import service.MemberService;
+import service.ModifyService;
 
 
 @WebServlet("*.do")
@@ -50,6 +53,15 @@ public class MemberController extends HttpServlet {
 			break;
 		case "list.do":	// http://localhost:9090/AJAX/list.do -> 얘를 브라우저 주소창에 입력해서 결과를 간단하게 확인할 수 있다. or postman(?) 이라는 tool을 이용할 수도 있다.
 			service = new ListService();
+			break;
+		case "detail.do":	// http://localhost:9090/AJAX/detail.do?no=..
+			service = new DetailService();
+			break;
+		case "modify.do":
+			service = new ModifyService();
+			break;
+		case "remove.do":
+			service = new RemoveService();
 			break;
 		}
 		

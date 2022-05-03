@@ -17,6 +17,25 @@
 	</select>
 	
 	
+	<select id="getMemeberCount" resultType="Integer">
+		SELECT COUNT(*) FROM MEMBER
+	</select>
+	
+	<select id="selectMemberByNo" parameterType="Long" resultType="domain.MemberDTO">
+		SELECT NO, ID, NAME, GENDER, ADDRESS FROM MEMBER WHERE NO = #{no}
+	</select>
+	
+	<update id="updateMember" parameterType="domain.MemberDTO">
+		UPDATE MEMBER
+		   SET NAME = #{name}, GENDER = #{gender}, ADDRESS = #{address}
+		 WHERE ID = #{id}
+	</update>
+	
+	<delete id="deleteMember" parameterType="Long">
+		DELETE FROM MEMBER WHERE NO = #{no}
+	</delete>
+	
+	
  	
  	
 </mapper>

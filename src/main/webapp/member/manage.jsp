@@ -34,7 +34,9 @@
 			success : function(responseText){
 				var memberList = $('#memberList');
 				memberList.empty();	// 회원 목록의 초기화!
-				$.each(responseText,function(i,member){
+				
+				// (1) 
+				/* $.each(responseText,function(i,member){
 					// 그냥 문자열 형식으로 만드는 방법도 있다!
 					var tr = $('<tr>');
 					$('<td>').html(member.id).appendTo(tr);
@@ -42,6 +44,19 @@
 					$('<td>').html(member.gender).appendTo(tr);
 					tr.append($('<td>').html(member.address));
 					$('<td>').html('<input type="button" value="조회" class="btnDetail">').appendTo(tr);
+					memberList.append(tr);
+				}) */
+				
+				// (2)
+				$('#memberCount').text(responseText.count);
+				$.each(responseText.members,function(i,member){
+					var tr = $('<tr>');
+					$('<td>').html(member.id).appendTo(tr);
+					$('<td>').html(member.name).appendTo(tr);
+					$('<td>').html(member.gender).appendTo(tr);
+					tr.append($('<td>').html(member.address));
+					//$('<td>').html('<input type="hidden" value="' + member.no + '"> <input type="button" value="조회" class="btnDetail">').appendTo(tr);
+					$('<td>').html('<input type="button" value="조회" class="btnDetail" data-no ="' + member.no  +'">').appendTo(tr);
 					memberList.append(tr);
 				})
 			},
@@ -52,7 +67,34 @@
 		});
 	}
 	function fnDetail(){
-		// 조회 버튼을 클릭하면 실행
+		
+		$('body').on('click','.btnDetail',function(){
+			//var no = $(this).prev().val();
+			var no = $(this).data('no');
+			$.ajax({
+				url : '/AJAX/detail.do?',
+				data : 'no=' + no,
+				type : 'GET',
+				dataType : 'json',
+				success : function(responseText){		// {"result" : true, "member" : {}}, {"result" : false}
+					if(responseText.result == true){
+						$('#no').val(responseText.member.no);
+						$('#id').val(responseText.member.id).prop('readonly',true);
+						$('#name').val(responseText.member.name);
+						$(':radio[name=gender][value="' + responseText.member.gender + '"]').prop('checked',true);
+						$('#address').val(responseText.member.address);
+					} else{
+						alert('조회된 회원 정보가 없습니다.');
+					}
+				},
+				error : function(jqXHR){
+					alert(jqXHR.status);
+					alert(jqXHR.statusText);
+				}
+				
+			});
+		})
+		
 	}
 	function fnAdd(){
 		// 등록 버튼을 클릭하면 실행
@@ -77,7 +119,8 @@
 			$.ajax({
 				url : '/AJAX/add.do',
 				type : 'POST',
-				data : 'id=' + $('#id').val() + '&name=' + $('#name').val() + '&gender=' + $(':radio[name="gender"]:checked').val() + '&address=' + $('#address').val(),				
+				data : $('#formMember').serialize(),		// 폼의 모든 요소를 줄줄이 &로 연결해서 보낸다.
+				//data : 'id=' + $('#id').val() + '&name=' + $('#name').val() + '&gender=' + $(':radio[name="gender"]:checked').val() + '&address=' + $('#address').val(),				
 				dataType : 'json',
 				success: function(responseText){		// AddService에서 out.write(reponseText) 가 success일 때, 함수 매개변수로 넘어온다.
 					if(responseText.res == 1){
@@ -100,15 +143,61 @@
 	}
 	function fnModify(){
 		// 수정 버튼을 클릭하면 실행
+		$('#btnModify').on('click',function(){
+			$.ajax({
+				url : 'modify.do',
+				dataType : 'json',
+				data : $('#formMember').serialize(),
+				type : 'POST',
+				success : function(responseText){
+					if(responseText.res > 0){
+						alert('회원 정보가 수정되었습니다.');
+						fnList();	// 목록 갱신
+						
+					} else{
+						alert('회원 정보 수정에 실패했습니다.')
+					}
+				},
+				error : function(jqXHR){
+					
+				}
+			})
+		});
 	}
 	function fnRemove()
 	{
 		// 삭제 버튼을 클릭하면 실행
+		$('#btnRemove').on('click',function(){
+			$.ajax({
+				url : '/AJAX/remove.do',
+				dataType : 'json',
+				data : 'no='+ $('#no').val(),
+				type : 'GET',
+				success : function(responseText){
+					if(responseText.res > 0){
+						alert('회원 정보가 삭제되었습니다.');
+						fnList();	// 목록 갱신
+						// 회원 입력 창 초기화!
+						$('#id').val('').prop('readonly',false);
+						$('#name').val('');
+						$(':radio[name="gender"]').prop('checked',false);
+						$('#address').val('');	
+					} else{
+						alert('회원 정보가 삭제되지 않았습니다.')
+					}
+				},
+				error : function(jqXHR){
+					
+				}
+				
+			})
+		})
+			
 	}
 	function fnInit(){
 		// 초기화 버튼을 클릭하면 실행
 		$('#btnInit').on('click',function(){
-			$('#id').val('');
+			$('#id').val('').prop('readonly',false);
 			$('#name').val('');
 			$(':radio[name="gender"]').prop('checked',false);
 			$('#address').val('');	
@@ -121,6 +210,7 @@
 	<h1>회원관리</h1>
 	<div>
 		<form id="formMember">
+			<input type="hidden" name="no" id="no">
 			<label for="id">
 				아이디<input type="text" name="id" id="id">		
 			</label>
@@ -150,6 +240,7 @@
 	
 	<div>
 		<table border="1">
+			<caption>회원수 : <span id="memberCount"></span>명</caption>
 			<thead>
 				<tr>
 					<td>아이디</td>
